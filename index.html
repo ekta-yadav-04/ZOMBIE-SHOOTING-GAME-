@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Neon Alien Hunt</title>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle, #020024, #090979, #000);
+    color:white;
+    text-align:center;
+    overflow:hidden;
+}
+
+h1{
+    margin:15px;
+    text-shadow: 0 0 20px cyan;
+}
+
+#hud{
+    display:flex;
+    justify-content:space-around;
+    font-size:20px;
+    margin-bottom:10px;
+}
+
+#gameArea{
+    width:100%;
+    height:80vh;
+    border-top:2px solid cyan;
+    position:relative;
+}
+
+#alien{
+    width:70px;
+    height:70px;
+    background: radial-gradient(circle, #00ffff, #00ff99);
+    border-radius:50%;
+    position:absolute;
+    box-shadow:0 0 25px cyan, 0 0 50px #00ffcc;
+    cursor:pointer;
+    animation: float 1s infinite alternate;
+}
+
+@keyframes float{
+    from{transform:translateY(0px);}
+    to{transform:translateY(15px);}
+}
+
+#startBtn{
+    padding:12px 30px;
+    font-size:18px;
+    background:#00ffff;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+    box-shadow:0 0 20px cyan;
+    margin-top:10px;
+}
+#startBtn:hover{
+    background:#00ffaa;
+}
+</style>
+</head>
+
+<body>
+
+<h1>👾 NEON ALIEN HUNT</h1>
+
+<div id="hud">
+    <div>Score: <span id="score">0</span></div>
+    <div>Time: <span id="time">30</span>s</div>
+    <div>Lives: <span id="lives">3</span></div>
+</div>
+
+<button id="startBtn" onclick="startGame()">Start Mission</button>
+
+<div id="gameArea">
+    <div id="alien"></div>
+</div>
+
+<script>
+let score=0;
+let time=30;
+let lives=3;
+let speed=1000;
+let moveAlien;
+let timer;
+
+const alien=document.getElementById("alien");
+const gameArea=document.getElementById("gameArea");
+
+function randomPosition(){
+    const x=Math.random()*(gameArea.clientWidth-70);
+    const y=Math.random()*(gameArea.clientHeight-70);
+    alien.style.left=x+"px";
+    alien.style.top=y+"px";
+}
+
+alien.onclick=()=>{
+    score++;
+    document.getElementById("score").innerText=score;
+    speed = Math.max(300, speed-40);   // game gets faster
+    clearInterval(moveAlien);
+    moveAlien=setInterval(randomPosition,speed);
+    randomPosition();
+};
+
+function loseLife(){
+    lives--;
+    document.getElementById("lives").innerText=lives;
+    if(lives<=0){
+        endGame("💀 Mission Failed!");
+    }
+}
+
+function startGame(){
+    score=0;
+    time=30;
+    lives=3;
+    speed=1000;
+    document.getElementById("score").innerText=0;
+    document.getElementById("time").innerText=30;
+    document.getElementById("lives").innerText=3;
+
+    randomPosition();
+    clearInterval(moveAlien);
+    moveAlien=setInterval(()=>{
+        randomPosition();
+        loseLife();
+    },speed);
+
+    clearInterval(timer);
+    timer=setInterval(()=>{
+        time--;
+        document.getElementById("time").innerText=time;
+        if(time<=0){
+            endGame("🏆 Mission Complete!");
+        }
+    },1000);
+}
+
+function endGame(msg){
+    clearInterval(moveAlien);
+    clearInterval(timer);
+    alert(msg+"\nYour Score: "+score);
+}
+</script>
+
+</body>
+</html>
